@@ -2,12 +2,12 @@
 import GravisLayout from '../layouts/GravisLayout.astro';
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const services = [
-  ['Пам’ятники з граніту','Класичні та сучасні рішення з натурального граніту.'],
-  ['Художнє оформлення','Унікальний дизайн і символічні елементи.'],
-  ['Портрети та написи','Професійне гравіювання портретів, написів і зображень.'],
-  ['Встановлення','Якісний монтаж із дотриманням усіх стандартів.'],
-  ['Благоустрій','Комплексне оформлення місць поховання.'],
-  ['QR-сторінка пам’яті','Цифрова сторінка з фото, відео, спогадами та історією життя.'],
+  ['Пам’ятники з граніту','Класичні та сучасні рішення з натурального граніту.','service-0.webp'],
+  ['Художнє оформлення','Унікальний дизайн і символічні елементи.','service-1.webp'],
+  ['Портрети та написи','Професійне гравіювання портретів, написів і зображень.','service-2.webp'],
+  ['Встановлення','Якісний монтаж із дотриманням усіх стандартів.','service-3.webp'],
+  ['Благоустрій','Комплексне оформлення місць поховання.','service-4.webp'],
+  ['QR-сторінка пам’яті','Цифрова сторінка з фото, відео, спогадами та історією життя.','service-5.webp'],
 ];
 const capabilities = [
   ['<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>','Фото'],
@@ -22,9 +22,9 @@ const capabilities = [
   ['<path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18"/>','Сімейний архів'],
 ];
 const steps = [
-  ['01','Консультація та концепція','Обговорюємо побажання, підбираємо форму, матеріал та художнє оформлення.'],
-  ['02','Створення та встановлення','Виготовляємо, гравіюємо та професійно встановлюємо на місці.'],
-  ['03','Активація цифрової сторінки','Створюємо сторінку пам’яті та розміщуємо QR-код на пам’ятнику.'],
+  ['01','Консультація та концепція','Обговорюємо побажання, підбираємо форму, матеріал та художнє оформлення.','process-0.webp'],
+  ['02','Створення та встановлення','Виготовляємо, гравіюємо та професійно встановлюємо на місці.','process-1.webp'],
+  ['03','Активація цифрової сторінки','Створюємо сторінку пам’яті та розміщуємо QR-код на пам’ятнику.','process-2.webp'],
 ];
 ---
 <GravisLayout>
@@ -35,9 +35,9 @@ const steps = [
       <div class="g-hero-shade"></div>
       <div class="g-hero-copy wrap"><p class="g-kicker">БІЛЬШЕ НІЖ ПАМ’ЯТНИК</p><h1>Пам’ять,<br/>закарбована в камені</h1><p class="g-intro">Gravis створює пам’ятники з граніту, художнє оформлення, встановлення та цифрові сторінки пам’яті, де найважливіше житиме поруч — сьогодні й для наступних поколінь.</p><div class="g-actions"><a class="g-button" href="#services">Обрати пам’ятник <span>→</span></a><a class="g-button outline" href="#contact">Консультація фахівця</a></div><div class="g-proof"><span><b>◇</b> Натуральний<br/>граніт преміум-якості</span><span><b>♢</b> Гарантія<br/>та професійне встановлення</span><span><b>▦</b> Сучасні технології<br/>для вічної пам’яті</span></div></div>
     </section>
-    <section class="g-services g-section" id="services"><div class="wrap"><div class="g-section-head"><div class="g-heading-row"><h2>Наші послуги</h2><span class="g-rule"></span><a href="#contact">Усі послуги <span>→</span></a></div><p>Комплексний підхід до створення місця пам’яті, яке поєднує традиції, майстерність і сучасні технології.</p></div><div class="g-service-grid">{services.map(([title,desc],i)=><a class="g-service" href="#contact"><div class="g-service-image"><img src={`${basePath}/images/services.webp`} alt={title} loading="lazy" style={`--tile-x:${i%3};--tile-y:${Math.floor(i/3)}`}/></div><div class="g-service-copy"><h3>{title}</h3><p>{desc}</p></div><span class="g-round-arrow" aria-hidden="true">→</span></a>)}</div></div></section>
+    <section class="g-services g-section" id="services"><div class="wrap"><div class="g-section-head"><div class="g-heading-row"><h2>Наші послуги</h2><span class="g-rule"></span><a href="#contact">Усі послуги <span>→</span></a></div><p>Комплексний підхід до створення місця пам’яті, яке поєднує традиції, майстерність і сучасні технології.</p></div><div class="g-service-grid">{services.map(([title,desc,image])=><a class="g-service" href="#contact"><div class="g-service-image"><img src={`${basePath}/images/${image}`} alt={title} loading="lazy"/></div><div class="g-service-copy"><h3>{title}</h3><p>{desc}</p></div><span class="g-round-arrow" aria-hidden="true">→</span></a>)}</div></div></section>
     <section class="g-archive" id="approach" style={`--archive-image:url("${basePath}/images/monument-hero.webp")`}><div class="wrap g-archive-layout"><div><h2>Що можна зберегти<br/>на сторінці пам’яті</h2><p>Цифрова сторінка пам’яті — це особистий простір, де живуть спогади, важливі моменти та голоси найближчих.</p></div><div class="g-archive-grid">{capabilities.map(([icon,label])=><div class="g-archive-item"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={icon}></svg></span><small>{label}</small></div>)}</div></div></section>
-    <section class="g-process" id="process"><div class="wrap"><div class="g-process-head"><h2>Як це працює</h2><p>Від першої розмови до збереження найцінніших спогадів.</p></div><div class="g-steps"><div class="g-step-rule" aria-hidden="true"></div>{steps.map(([number,title,desc],i)=><article class="g-step"><span class="g-step-number">{number}</span><div class="g-step-image"><img src={`${basePath}/images/process.webp`} alt={title} loading="lazy" style={`--tile-x:${i};--tile-y:0`}/></div><h3>{title}</h3><p>{desc}</p></article>)}</div></div></section>
+    <section class="g-process" id="process"><div class="wrap"><div class="g-process-head"><h2>Як це працює</h2><p>Від першої розмови до збереження найцінніших спогадів.</p></div><div class="g-steps"><div class="g-step-rule" aria-hidden="true"></div>{steps.map(([number,title,desc,image])=><article class="g-step"><span class="g-step-number">{number}</span><div class="g-step-image"><img src={`${basePath}/images/${image}`} alt={title} loading="lazy"/></div><h3>{title}</h3><p>{desc}</p></article>)}</div></div></section>
     <section class="g-bridge"><div class="wrap g-bridge-layout"><div class="g-bridge-copy"><h2>Приклад сторінки пам’яті</h2><p>Діліться спогадами. Зберігайте історію. Будьте поруч, навіть коли фізично далеко.</p><a class="g-button" href={`${basePath}/memory/oleksandr-kovalenko`}>Відкрити сторінку пам’яті <span>→</span></a></div><a class="g-phone" href={`${basePath}/memory/oleksandr-kovalenko`} aria-label="Відкрити сторінку пам’яті Олександра Коваленка"><img src={`${basePath}/images/portrait.webp`} alt="Портрет Олександра на сторінці пам’яті" loading="lazy"/></a><div class="g-bridge-note"><h3>Більше, ніж спогади</h3><p>Сторінка пам’яті — це можливість зберегти голос, важливі моменти, сімейні історії та все, що робить людину особливою. Доступна з будь-якого пристрою, у будь-якій точці світу.</p></div></div></section>
     <footer class="g-footer" id="contact"><div class="wrap g-footer-grid"><div class="g-footer-brand"><a class="g-brand" href={`${basePath}/`}><span class="g-mark">G<i></i></span><span>Gravis</span></a><p>Створюємо місця пам’яті,<br/>які залишаються з нами назавжди.</p></div><div class="g-footer-contacts"><h3>Контакти</h3><a href="tel:+380671234567">⌕ &nbsp; +380 67 123 45 67</a><a href="mailto:info@gravis.ua">✉ &nbsp; info@gravis.ua</a><p>⌖ &nbsp; м. Київ, вул. Гранітна, 12</p><p>◷ &nbsp; Пн — Сб: 9:00 — 18:00</p></div><div class="g-footer-cta"><h2>Обговоримо<br/>ваш проєкт?</h2><p>Допоможемо підібрати найкраще рішення та відповімо на всі питання.</p><a class="g-button" href="mailto:info@gravis.ua?subject=Консультація%20Gravis">Залишити заявку <span>→</span></a></div></div><div class="wrap g-legal"><small>© 2026 Gravis. Всі права захищені.</small><div><a href={`${basePath}/sitemap.xml`}>Карта сайту</a></div></div></footer>
   </main>
