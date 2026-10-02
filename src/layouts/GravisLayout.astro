@@ -1,0 +1,15 @@
+---
+import '../styles/gravis.css';
+const { title = 'Gravis — пам’ять, закарбована в камені', description = 'Гранітні пам’ятники, художнє оформлення та цифрові сторінки пам’яті.' } = Astro.props;
+---
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1b1a18" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body class="gravis"><slot /></body>
+</html>
