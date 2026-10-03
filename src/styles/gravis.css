@@ -301,3 +301,8 @@
 @media(max-width:1000px){.module-choice-grid:has(.module-choice-visual):not(.module-artwork-grid){grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:850px){.stone-material-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.module-artwork-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.module-choice-grid:has(.module-choice-visual){grid-template-columns:1fr}.module-choice-visual{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center}.module-choice-image{grid-column:1;grid-row:1;width:96px;height:96px;min-height:96px;aspect-ratio:auto;object-fit:cover}.module-choice-content{grid-column:2;grid-row:1;grid-template-columns:20px minmax(0,1fr) 20px;gap:8px;padding:11px}.stone-material-grid{grid-template-columns:1fr;gap:10px}.stone-material-select{grid-template-columns:minmax(0,1fr) 24px;gap:9px;padding:0 0 10px}.stone-material-select>img{width:100%;height:130px;max-height:130px;aspect-ratio:auto}.stone-material-copy{gap:4px;padding-left:12px}.stone-material-copy b{font-size:18px}.stone-material-copy small{font-size:10px}.stone-material-select>.module-choice-check{margin-right:10px}.stone-thickness{margin:10px 10px 10px}.stone-thickness button{min-width:48px;min-height:44px}}
+/* Keep short-choice cards readable when a grid column gets narrow. */
+.module-choice{min-width:0;grid-template-columns:32px minmax(0,1fr) 24px;gap:14px;padding:20px 22px}
+.module-choice>span:nth-child(2){width:100%;min-width:0}
+.module-choice b,.module-choice small{overflow-wrap:normal;word-break:normal}
+@media(max-width:680px){.module-choice{grid-template-columns:26px minmax(0,1fr) 22px;gap:10px;padding:14px}}
