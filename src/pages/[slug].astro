@@ -1,0 +1,7 @@
+---
+import ModulePage from '../components/ModulePage.astro';
+import { modules } from '../data/modules';
+export function getStaticPaths() { return modules.map((page) => ({ params: { slug: page.slug }, props: { page } })); }
+const { page } = Astro.props;
+---
+<ModulePage page={page} />

@@ -1,0 +1,38 @@
+---
+import GravisLayout from '../layouts/GravisLayout.astro';
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<GravisLayout title="Сторінку не знайдено — Gravis" description="Сторінка, яку ви шукаєте, недоступна. Перейдіть до послуг Gravis або поверніться на головну." noindex={true}>
+  <a class="skip-link" href="#main-content">Перейти до змісту</a>
+  <header class="g-header g-service-header">
+    <a class="g-brand" href={`${basePath}/`} aria-label="Gravis — на головну"><span class="g-mark">G<i></i></span><span>Gravis</span></a>
+    <nav aria-label="Головна навігація"><a href={`${basePath}/#services`}>Послуги</a><a href={`${basePath}/#process`}>Як працюємо</a><a href={`${basePath}/memory/oleksandr-kovalenko`}>Сторінка пам’яті</a></nav>
+    <div class="g-header-actions"><a class="g-header-cta" href={`${basePath}/#contact`}>Контакти <span>→</span></a><button class="g-menu" aria-label="Відкрити меню" aria-expanded="false">☰</button></div>
+  </header>
+  <main class="g-not-found" id="main-content">
+    <div class="wrap g-not-found-inner">
+      <p class="g-kicker">GRAVIS / 404</p>
+      <p class="g-not-found-code" aria-hidden="true">404</p>
+      <h1>Сторінку не знайдено</h1>
+      <p>Можливо, посилання застаріло або адресу введено з помилкою. Перейдіть до напрямків Gravis або поверніться на головну.</p>
+      <div class="g-actions"><a class="g-button" href={`${basePath}/#services`}>Переглянути послуги <span aria-hidden="true">→</span></a><a class="g-text-link" href={`${basePath}/`}>На головну</a></div>
+    </div>
+  </main>
+  <footer class="g-footer g-not-found-footer"><div class="wrap g-legal"><small>© {new Date().getFullYear()} Gravis · Крижопіль</small><a href={`${basePath}/contact`}>Контактна форма</a></div></footer>
+  <script>
+    const menu = document.querySelector<HTMLButtonElement>('.g-menu');
+    const pageNav = document.querySelector<HTMLElement>('.g-header nav');
+    menu?.addEventListener('click', () => {
+      const open = menu.getAttribute('aria-expanded') !== 'true';
+      menu.setAttribute('aria-expanded', String(open));
+      menu.setAttribute('aria-label', open ? 'Закрити меню' : 'Відкрити меню');
+      pageNav?.classList.toggle('nav-open', open);
+    });
+    pageNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+      menu?.setAttribute('aria-expanded', 'false');
+      menu?.setAttribute('aria-label', 'Відкрити меню');
+      pageNav.classList.remove('nav-open');
+    }));
+  </script>
+</GravisLayout>

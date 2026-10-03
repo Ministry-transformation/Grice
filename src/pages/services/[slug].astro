@@ -1,0 +1,110 @@
+---
+import GravisLayout from '../../layouts/GravisLayout.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import { services } from '../../data/services';
+import { monumentOrderFormUrl } from '../../data/contact';
+import { serviceSeo, localAreaCopy } from '../../data/seo';
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+export function getStaticPaths() {
+  return services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+const { service } = Astro.props;
+const related = services.filter((item) => item.slug !== service.slug).slice(0, 3);
+const seo = serviceSeo[service.slug] ?? { title: `${service.name} у Крижополі | Gravis`, description: service.intro };
+const siteRoot = `${(import.meta.env.PUBLIC_SITE_URL || import.meta.env.SITE || 'https://ministry-transformation.github.io').replace(/\/$/, '')}${basePath}/`;
+---
+
+<GravisLayout title={seo.title} description={seo.description} canonical={`/services/${service.slug}`} breadcrumbs={[{ name: 'Послуги', url: `${basePath}/#services` }]} structuredData={[{ '@type': 'Service', '@id': `${siteRoot}services/${service.slug}#service`, name: service.name, serviceType: service.name, description: seo.description, provider: { '@id': `${siteRoot}#local-business` }, ...(service.slug === 'storinka-pamiati' ? {} : { areaServed: { '@type': 'AdministrativeArea', name: 'Крижопіль і навколишні населені пункти Вінницької області, орієнтовно до 30–50 км' } }) }]} socialImage={service.image} faqs={service.faqs}>
+  <a class="skip-link" href="#main-content">Перейти до змісту</a>
+  <header class="g-header g-service-header">
+    <a class="g-brand" href={`${basePath}/`} aria-label="Gravis — на головну"><span class="g-mark">G<i></i></span><span>Gravis</span></a>
+    <nav aria-label="Головна навігація">
+      <a href={`${basePath}/monuments`}>Пам’ятники</a>
+      <a href={`${basePath}/stones`}>Камінь</a>
+      <a href={`${basePath}/artwork`}>Оформлення</a>
+      <a href={`${basePath}/digital-memorial`}>Сторінка пам’яті</a>
+      <a href={`${basePath}/contact`}>Контакти</a>
+    </nav>
+    <div class="g-header-actions">
+      <a class="g-header-cta" href="#request">Обговорити проєкт <span>→</span></a>
+      <button class="g-menu" aria-label="Відкрити меню" aria-expanded="false">☰</button>
+    </div>
+  </header>
+
+  <main class="g-service-page" id="main-content">
+    <section class="g-service-hero" style={`--service-image:url("${basePath}/images/${service.image}")`}>
+      <div class="wrap g-service-hero-inner">
+        <nav class="g-breadcrumbs" aria-label="Навігаційний ланцюжок"><a href={`${basePath}/`}>Головна</a><span aria-hidden="true">/</span><a href={`${basePath}/#services`}>Послуги</a><span aria-hidden="true">/</span><span aria-current="page">{service.name}</span></nav>
+        <div class="g-service-hero-copy">
+          <p class="g-kicker">{service.eyebrow}</p>
+          <h1>{service.headline}</h1>
+          <p>{service.intro}</p>
+          <div class="g-actions"><a class="g-button" href={`${basePath}/${service.moduleSlug}`}>Огляд напрямку <span aria-hidden="true">→</span></a><a class="g-text-link" href={`${basePath}/#services`}>Усі напрямки</a></div>
+        </div>
+        <span class="g-service-number" aria-hidden="true">GRAVIS / 0{services.findIndex((item) => item.slug === service.slug) + 1}</span>
+      </div>
+    </section>
+
+    <section class="g-service-intro g-section">
+      <div class="wrap g-service-intro-grid">
+        <div><p class="g-kicker dark">{service.name}</p><h2>{service.detailTitle}</h2></div>
+        <div><p>{service.detail}</p><a class="g-underlink" href="#request">Розповісти, що потрібно <span aria-hidden="true">→</span></a></div>
+      </div>
+      {service.slug !== 'storinka-pamiati' && <p class="g-local-area wrap">{localAreaCopy}</p>}
+    </section>
+
+    <section class="g-service-benefits">
+      <div class="wrap">
+        <div class="g-service-section-head"><p class="g-kicker dark">ВАЖЛИВІ ДЕТАЛІ</p><h2>Що врахуємо у вашому проєкті</h2></div>
+        <div class="g-service-benefit-grid">
+          {service.benefits.map((benefit, index) => <article class="g-service-benefit"><span aria-hidden="true">0{index + 1}</span><h3>{benefit.title}</h3><p>{benefit.text}</p></article>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="g-service-process">
+      <div class="wrap">
+        <div class="g-service-section-head inverse"><p class="g-kicker">ЗРОЗУМІЛИЙ ПЛАН</p><h2>Від першої розмови до результату</h2><p>Спершу погоджуємо обсяг і вартість — потім починаємо роботи.</p></div>
+        <ol class="g-service-steps">{service.steps.map((step, index) => <li><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}</ol>
+      </div>
+    </section>
+
+    {service.slug === 'storinka-pamiati' && <section class="g-service-example"><div class="wrap g-service-example-inner"><div><p class="g-kicker dark">ПРИКЛАД ОФОРМЛЕННЯ</p><h2>Подивіться, як може виглядати сторінка</h2><p>Це демонстраційна історія з галереєю фото, важливими моментами та спогадами рідних.</p></div><a class="g-button" href={`${basePath}/memory/oleksandr-kovalenko`}>Відкрити приклад <span aria-hidden="true">→</span></a></div></section>}
+
+    <section class="g-service-faq">
+      <div class="wrap g-service-faq-layout">
+        <div class="g-service-section-head"><p class="g-kicker dark">ПЕРЕД ЗВЕРНЕННЯМ</p><h2>Часті запитання</h2><p>Якщо не знайшли відповідь — залиште запитання у формі, і ми його побачимо в листі.</p></div>
+        <div class="g-service-faq-list">{service.faqs.map((faq) => <details><summary>{faq.question}<span aria-hidden="true">+</span></summary><p>{faq.answer}</p></details>)}</div>
+      </div>
+    </section>
+
+    <section class="g-service-request" id="request">
+      <div class="wrap g-service-request-grid">
+        <div class="g-service-request-copy"><p class="g-kicker">НАСТУПНИЙ КРОК</p><h2>Розкажіть, що хочете створити</h2><p>Оберіть короткий контактний запит або детально опишіть пам’ятник для прорахунку.</p><a href={`${basePath}/contact#request`}>Залишити коротку заявку →</a><a href={monumentOrderFormUrl} target="_blank" rel="noopener noreferrer">Детальний прорахунок пам’ятника ↗</a><small>Коротка форма відкриває лист на mega-gospodar@meta.ua для перевірки й надсилання.</small></div>
+        <LeadForm serviceName={service.name} />
+      </div>
+    </section>
+
+    <section class="g-related-services"><div class="wrap"><div class="g-service-section-head"><p class="g-kicker dark">ІНШІ НАПРЯМКИ</p><h2>Ще можемо допомогти</h2></div><div class="g-related-grid">{related.map((item) => <a href={`${basePath}/services/${item.slug}`}><img src={`${basePath}/images/${item.image}`} alt={item.imageAlt} loading="lazy"/><span><b>{item.name}</b><small>{item.short}</small></span><i aria-hidden="true">→</i></a>)}</div></div></section>
+  </main>
+
+  <footer class="module-footer"><div class="wrap"><a class="g-brand" href={`${basePath}/`}><span class="g-mark">G<i></i></span><span>Gravis</span></a><nav><a href={`${basePath}/monuments`}>Пам’ятники</a><a href={`${basePath}/stones`}>Камінь</a><a href={`${basePath}/artwork`}>Оформлення</a><a href={`${basePath}/contact`}>Контакт</a></nav><small>© {new Date().getFullYear()} Gravis · Крижопіль · Понад 25 років досвіду</small></div></footer>
+
+  <script>
+    const menu = document.querySelector<HTMLButtonElement>('.g-menu');
+    const pageNav = document.querySelector<HTMLElement>('.g-header nav');
+    menu?.addEventListener('click', () => {
+      const open = menu.getAttribute('aria-expanded') !== 'true';
+      menu.setAttribute('aria-expanded', String(open));
+      menu.setAttribute('aria-label', open ? 'Закрити меню' : 'Відкрити меню');
+      pageNav?.classList.toggle('nav-open', open);
+    });
+    pageNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+      menu?.setAttribute('aria-expanded', 'false');
+      menu?.setAttribute('aria-label', 'Відкрити меню');
+      pageNav.classList.remove('nav-open');
+    }));
+  </script>
+</GravisLayout>

@@ -1,0 +1,97 @@
+---
+import GravisLayout from '../layouts/GravisLayout.astro';
+import LeadForm from './LeadForm.astro';
+import { monumentOrderFormUrl } from '../data/contact';
+import { moduleSeo, localAreaCopy } from '../data/seo';
+import { services } from '../data/services';
+import type { ModulePage as Module } from '../data/modules';
+import { monumentConcepts, workConcepts, letteringSamples, stoneThicknessOptions } from '../data/modules';
+const { page } = Astro.props as { page: Module };
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteRoot = `${(import.meta.env.PUBLIC_SITE_URL || import.meta.env.SITE || 'https://ministry-transformation.github.io').replace(/\/$/, '')}${base}/`;
+const seo = moduleSeo[page.slug] ?? { title: `${page.title} | Gravis у Крижополі`, description: page.intro };
+const servicePage = ['monuments', 'stones', 'artwork', 'portraits-lettering', 'installation', 'landscaping'].includes(page.slug);
+const serviceSlugByModule: Record<string, string> = { monuments: 'granitni-pamiatnyky', stones: 'granitni-pamiatnyky', artwork: 'khudozhnie-oformlennia', 'portraits-lettering': 'portrety-ta-napysy', installation: 'vstanovlennia', landscaping: 'blagoustrii' };
+const relatedService = services.find(({ slug }) => slug === serviceSlugByModule[page.slug]);
+const pageStructuredData = servicePage ? [{ '@type': 'Service', name: page.title, description: seo.description, serviceType: page.title, provider: { '@id': `${siteRoot}#local-business` }, areaServed: { '@type': 'AdministrativeArea', name: 'Крижопіль і навколишні населені пункти Вінницької області' } }] : [];
+---
+<GravisLayout title={seo.title} description={seo.description} canonical={`/${page.slug}`} pageType={seo.pageType ?? 'WebPage'} includeLocalBusiness={page.slug === 'contact'} structuredData={pageStructuredData} faqs={page.faqs}>
+  <a class="skip-link" href="#main-content">Перейти до змісту</a>
+  <header class="g-header g-service-header module-header">
+    <a class="g-brand" href={`${base}/`} aria-label="Gravis — на головну"><span class="g-mark">G<i></i></span><span>Gravis</span></a>
+    <nav aria-label="Головна навігація"><a href={`${base}/monuments`}>Пам’ятники</a><a href={`${base}/stones`}>Камінь</a><a href={`${base}/artwork`}>Оформлення</a><a href={`${base}/works`}>Концепції</a><a href={`${base}/about`}>Підхід</a></nav>
+    <div class="g-header-actions"><a class="g-header-cta" href={`${base}/contact`}>Обговорити <span>→</span></a><button class="g-menu" aria-label="Відкрити меню" aria-expanded="false">☰</button></div>
+  </header>
+  <main class="module-page" id="main-content">
+    <section class="module-hero">
+      <div class="module-hero-image"><img src={`${base}/images/${page.image}`} alt={page.alt} fetchpriority="high" width="1200" height="800" /></div>
+      <div class="module-hero-shade"></div>
+      <div class="wrap module-hero-copy"><a class="module-back" href={`${base}/`}>← На головну</a><p class="g-kicker">{page.eyebrow}</p><h1>{page.title}</h1><p>{page.intro}</p><a class="g-button" href="#module-choices">Підібрати напрямок <span aria-hidden="true">↓</span></a></div>
+      <span class="module-hero-caption">Ілюстративне зображення · концепція</span>
+    </section>
+    <section class="module-note"><div class="wrap"><span aria-hidden="true">i</span><p>{page.note}</p></div></section>
+    {servicePage && <div class="g-local-service wrap"><p>{localAreaCopy}</p>{relatedService && <a class="module-small-link" href={`${base}/services/${relatedService.slug}`}>Детальніше: {relatedService.name} →</a>}</div>}
+    {page.slug === 'contact' && <section class="g-business-info"><div class="wrap g-business-info-grid"><div><p class="g-kicker dark">МАЙСТЕРНЯ У КРИЖОПОЛІ</p><h2>Понад 25 років у справі</h2><p>Виготовлення та художнє оформлення гранітних і бетонних пам’ятників, професійне встановлення.</p></div><div class="g-business-contacts"><h3>Зв’язатися з нами</h3><a href="tel:+380636491714">+38 (063) 649-17-14</a><a href="tel:+380679186814">+38 (067) 918-68-14</a><a href="https://www.google.com/maps/search/?api=1&query=Крижопіль%2C%20вулиця%20Данила%20Нечая%2031-А" target="_blank" rel="noopener noreferrer">Крижопіль, вул. Данила Нечая, 31-А ↗</a></div></div></section>}
+    <section class="module-choices wrap" id="module-choices">
+      <div class="module-title"><p class="g-kicker dark">ВАШІ ПОБАЖАННЯ</p><h2>{page.choicesTitle}</h2><p>Оберіть один чи кілька пунктів — вибір додасться до форми нижче.</p></div>
+      {page.slug === 'stones' ? <div class="stone-material-grid">{page.choices.map((choice) => <article class="stone-material-card" data-stone-card data-stone-name={choice.name}><button class="stone-material-select" type="button" data-choice aria-pressed="false"><img src={base + '/images/' + (choice.image ?? 'granite-gray.webp')} alt="" loading="lazy" width="720" height="720"/><span class="stone-material-copy"><b>{choice.name}</b><small>{choice.description}</small></span><span class="module-choice-check" aria-hidden="true">+</span></button><fieldset class="stone-thickness"><legend>Товщина, см</legend><div>{stoneThicknessOptions.map((thickness) => <button type="button" data-stone-thickness={thickness} aria-pressed="false">{thickness}</button>)}</div></fieldset></article>)}</div> : <div class={'module-choice-grid' + (page.slug === 'artwork' ? ' module-artwork-grid' : '')}>{page.choices.map((choice, index) => <button class={'module-choice' + (choice.image ? ' module-choice-visual' : '')} type="button" data-choice aria-pressed="false">{choice.image && <img class="module-choice-image" src={base + '/images/' + choice.image} alt="" loading="lazy" width="720" height="720"/>}<span class={choice.image ? 'module-choice-content' : ''}><span class="module-choice-number">{String(index + 1).padStart(2,'0')}</span><span><b>{choice.name}</b><small>{choice.description}</small></span><span class="module-choice-check" aria-hidden="true">+</span></span></button>)}</div>}
+      {page.slug === 'monuments' && <section class="module-anatomy" aria-labelledby="anatomy-title"><div class="module-title"><p class="g-kicker dark">ЯК ЧИТАТИ ФОРМУ</p><h2 id="anatomy-title">Основні частини композиції</h2><p>Схема показує взаємозв’язок елементів, не задає масштаб, розміри чи конструктивні вимоги.</p></div><div class="anatomy-layout"><div class="anatomy-figure"><svg viewBox="0 0 420 260" role="img" aria-label="Схематичні силуети стели, основи та простору навколо"><path d="M38 212H382" stroke="#b6aa98" stroke-width="2"/><path d="M146 179V62Q210 18 274 62V179Z" fill="#302e2a" stroke="#756d62" stroke-width="2"/><path d="M129 181H291V205H129Z" fill="#514d45"/><path d="M84 207H336V220H84Z" fill="#938775"/><path d="M63 225H357" stroke="#c5a17e" stroke-width="2" stroke-dasharray="5 6"/><circle cx="210" cy="112" r="22" fill="none" stroke="#c5a17e" stroke-width="2"/><path d="M196 112h28M210 98v28" stroke="#c5a17e" stroke-width="1"/></svg><span class="anatomy-label anatomy-label-stela">Стела</span><span class="anatomy-label anatomy-label-base">Основа</span><span class="anatomy-label anatomy-label-space">Ділянка</span></div><div class="anatomy-parts"><button type="button" data-anatomy-select data-title="Стела" data-copy="Форма та пропорція центрального елемента визначають загальний характер пам’ятника." aria-pressed="true"><b>01 · Стела</b><span>Головний вертикальний або горизонтальний елемент.</span></button><button type="button" data-anatomy-select data-title="Основа" data-copy="Нижні елементи композиції узгоджуються з формою, ділянкою й правилами місця." aria-pressed="false"><b>02 · Основа</b><span>Частина, що візуально пов’язує елементи композиції.</span></button><button type="button" data-anatomy-select data-title="Простір навколо" data-copy="Межі, квітник і покриття залежать від фактичної ділянки та місцевих вимог." aria-pressed="false"><b>03 · Простір навколо</b><span>Планування місця з урахуванням оточення й догляду.</span></button><p class="anatomy-description" aria-live="polite"><b data-anatomy-title>Стела</b><span data-anatomy-copy>Форма та пропорція центрального елемента визначають загальний характер пам’ятника.</span></p></div></div></section>}
+      {page.slug === 'portraits-lettering' && <section class="module-lettering" aria-labelledby="lettering-title"><div class="module-title"><p class="g-kicker dark">ШРИФТОВІ НАПРЯМКИ</p><h2 id="lettering-title">Порівняйте характер напису</h2><p>Шрифт і фактичний спосіб нанесення погоджуються окремо. Оберіть приклад, щоб додати його до побажань.</p></div><div class="lettering-grid">{letteringSamples.map((sample)=><button class={`lettering-sample ${sample.className}`} type="button" data-font-choice={sample.name} aria-pressed="false"><small>{sample.name}</small><b>Текст напису</b><span>Ім’я · дата</span></button>)}</div></section>}
+      {page.slug === 'works' && <div class="module-works"><div class="module-title"><p class="g-kicker dark">ГАЛЕРЕЯ НАПРЯМКІВ</p><h2>Знайдіть близький характер</h2></div><div class="module-filter" role="group" aria-label="Фільтр концепцій"><button type="button" data-work-filter="all" aria-pressed="true">Усі</button><button type="button" data-work-filter="monuments" aria-pressed="false">Пам’ятники</button><button type="button" data-work-filter="artwork" aria-pressed="false">Оформлення</button><button type="button" data-work-filter="portrait" aria-pressed="false">Портрети</button><button type="button" data-work-filter="installation" aria-pressed="false">Монтаж</button><button type="button" data-work-filter="landscape" aria-pressed="false">Благоустрій</button><button type="button" data-work-filter="digital" aria-pressed="false">Цифрові сторінки</button></div><div class="module-work-grid">{workConcepts.map((item)=><article class="module-work-card" data-work-card data-category={item.category}><img src={`${base}/images/${item.image}`} alt={item.alt} loading="lazy" width="512" height="512"/><div><small>{item.label} · концепція</small><h3>{item.title}</h3><span>Ілюстрація, не виконане замовлення</span></div></article>)}</div><p class="module-work-empty" data-work-empty hidden>У цій категорії поки немає прикладів.</p></div>}
+      {page.slug === 'monuments' && <div class="module-models"><div class="module-title"><p class="g-kicker dark">НАПРЯМКИ ФОРМИ</p><h2>Концепції для обговорення</h2><p>Це візуальні напрямки без фіксованих розмірів, ціни чи комплектації.</p></div><div class="module-model-grid">{monumentConcepts.map((model) => <a class="module-model" href={`${base}/monuments/${model.slug}`}><img src={`${base}/images/${model.image}`} alt={model.alt} loading="lazy" width="512" height="512"/><span><small>{model.form}</small><b>{model.name}</b><span aria-hidden="true">Детальніше →</span></span></a>)}</div></div>}
+    </section>
+    <section class="module-process"><div class="wrap"><div class="module-title"><p class="g-kicker">ПОСЛІДОВНІСТЬ</p><h2>Від ідеї до погодженого плану</h2></div><div class="module-step-grid">{page.steps.map((step,index) => <article><span>0{index+1}</span><h3>{step.title}</h3><p>{step.text}</p></article>)}</div></div></section>
+    <section class="module-faq wrap"><div class="module-title"><p class="g-kicker dark">ВІДПОВІДІ</p><h2>Що варто знати</h2></div><div>{page.faqs.map((faq) => <details><summary>{faq.question}<span aria-hidden="true">+</span></summary><p>{faq.answer}</p></details>)}</div></section>
+    {page.slug === 'digital-memorial' && <section class="module-demo wrap"><div><p class="g-kicker dark">ДЕМО ІНТЕРФЕЙСУ</p><h2>Подивіться, як може виглядати сторінка</h2><p>Це демонстраційне наповнення для перегляду структури й взаємодій.</p></div><a class="g-button" href={`${base}/memory/oleksandr-kovalenko`}>Відкрити demo-сторінку <span aria-hidden="true">→</span></a></section>}
+    <section class="module-contact" id="request"><div class="wrap module-contact-layout"><div><p class="g-kicker">НАСТУПНИЙ КРОК</p><h2>{page.slug === 'contact' ? 'Оберіть формат звернення' : 'Обговорімо ваш задум'}</h2><p>{page.slug === 'contact' ? 'Коротка заявка відкриє лист на mega-gospodar@meta.ua. Для детального прорахунку пам’ятника перейдіть до Google Форми.' : 'Залиште контакт і деталі. Перед відправленням ви самі перевірите лист.'}</p><a class="g-button g-form-choice-button" href={monumentOrderFormUrl} target="_blank" rel="noopener noreferrer">Детальний прорахунок пам’ятника <span>↗</span></a></div><LeadForm serviceName={page.service} compact={page.slug === 'contact'} /></div></section>
+  </main>
+  <footer class="module-footer"><div class="wrap"><a class="g-brand" href={`${base}/`}><span class="g-mark">G<i></i></span><span>Gravis</span></a><nav aria-label="Додаткова навігація"><a href={`${base}/monuments`}>Пам’ятники</a><a href={`${base}/stones`}>Камінь</a><a href={`${base}/artwork`}>Оформлення</a><a href={`${base}/installation`}>Встановлення</a><a href={`${base}/landscaping`}>Благоустрій</a><a href={`${base}/digital-memorial`}>Сторінка пам’яті</a><a href={`${base}/works`}>Концепції</a><a href={`${base}/about`}>Про підхід</a><a href={`${base}/contact`}>Контакт</a></nav><small>© {new Date().getFullYear()} Gravis · Крижопіль · Понад 25 років досвіду</small></div></footer>
+  <script>
+    const selected = new Set<string>();
+    const thicknessByStone = new Map<string, string>();
+    let selectedFont = '';
+    const syncPreferences = () => {
+      const preferences = document.querySelector<HTMLInputElement>('[data-preferences]');
+      const choices = [...selected].map((name) => thicknessByStone.has(name) ? name + ' · товщина ' + thicknessByStone.get(name) + ' см' : name);
+      if (preferences) preferences.value = [...choices, selectedFont ? 'Шрифт: ' + selectedFont : ''].filter(Boolean).join(', ');
+    };
+    document.querySelectorAll<HTMLButtonElement>('[data-stone-thickness]').forEach((button) => button.addEventListener('click', () => {
+      const card = button.closest<HTMLElement>('[data-stone-card]');
+      const name = card?.dataset.stoneName ?? '';
+      if (!name) return;
+      card?.querySelectorAll<HTMLButtonElement>('[data-stone-thickness]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+      thicknessByStone.set(name, button.dataset.stoneThickness ?? '');
+      const materialButton = card?.querySelector<HTMLButtonElement>('[data-choice]');
+      if (!selected.has(name)) { selected.add(name); materialButton?.setAttribute('aria-pressed', 'true'); const check = materialButton?.querySelector<HTMLElement>('.module-choice-check'); if (check) check.textContent = '✓'; }
+      syncPreferences();
+    }));
+    document.querySelectorAll<HTMLButtonElement>('[data-anatomy-select]').forEach((button) => button.addEventListener('click', () => {
+      document.querySelectorAll<HTMLButtonElement>('[data-anatomy-select]').forEach((item) => item.setAttribute('aria-pressed',String(item === button)));
+      const title=document.querySelector<HTMLElement>('[data-anatomy-title]'); const copy=document.querySelector<HTMLElement>('[data-anatomy-copy]');
+      if (title) title.textContent=button.dataset.title??''; if (copy) copy.textContent=button.dataset.copy??'';
+    }));
+    document.querySelectorAll<HTMLButtonElement>('[data-font-choice]').forEach((button) => button.addEventListener('click', () => {
+      selectedFont=button.dataset.fontChoice??'';
+      document.querySelectorAll<HTMLButtonElement>('[data-font-choice]').forEach((item)=>item.setAttribute('aria-pressed',String(item===button)));
+      syncPreferences();
+    }));
+    const filters = document.querySelectorAll<HTMLButtonElement>('[data-work-filter]');
+    filters.forEach((filter) => filter.addEventListener('click', () => {
+      const category = filter.dataset.workFilter ?? 'all';
+      filters.forEach((item) => item.setAttribute('aria-pressed', String(item === filter)));
+      let visible = 0;
+      document.querySelectorAll<HTMLElement>('[data-work-card]').forEach((card) => { const show = category === 'all' || card.dataset.category === category; card.hidden = !show; if (show) visible += 1; });
+      const empty = document.querySelector<HTMLElement>('[data-work-empty]'); if (empty) empty.hidden = visible > 0;
+    }));
+    document.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => button.addEventListener('click', () => {
+      const label = button.querySelector('b')?.textContent?.trim() ?? '';
+      if (selected.has(label)) { selected.delete(label); button.setAttribute('aria-pressed','false'); button.querySelector('.module-choice-check')!.textContent = '+'; }
+      else { selected.add(label); button.setAttribute('aria-pressed','true'); button.querySelector('.module-choice-check')!.textContent = '✓'; }
+      syncPreferences();
+    }));
+    const navButton = document.querySelector<HTMLButtonElement>('.g-menu');
+    const pageNav = document.querySelector<HTMLElement>('.g-header nav');
+    navButton?.addEventListener('click', () => { const open = navButton.getAttribute('aria-expanded') !== 'true'; navButton.setAttribute('aria-expanded',String(open)); navButton.setAttribute('aria-label',open?'Закрити меню':'Відкрити меню'); pageNav?.classList.toggle('nav-open',open); });
+    pageNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click',()=>{navButton?.setAttribute('aria-expanded','false');pageNav?.classList.remove('nav-open');}));
+  </script>
+</GravisLayout>

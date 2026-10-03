@@ -5,7 +5,7 @@ const site = process.env.PUBLIC_SITE_URL || 'https://ministry-transformation.git
 
 export default defineConfig({
   site,
-  base: process.env.PUBLIC_BASE_PATH || '/',
+  base: process.env.PUBLIC_BASE_PATH || '/Grice',
   output: 'static',
   trailingSlash: 'never',
   vite: { plugins: [tailwindcss()] },

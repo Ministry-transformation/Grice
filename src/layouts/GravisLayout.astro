@@ -1,6 +1,24 @@
 ---
 import '../styles/gravis.css';
-const { title = 'Gravis — пам’ять, закарбована в камені', description = 'Гранітні пам’ятники, художнє оформлення та цифрові сторінки пам’яті.' } = Astro.props;
+import { localBusinessSchema } from '../data/seo';
+const { title = 'Пам’ятники у Крижополі — Gravis', description = 'Виготовлення гранітних і бетонних пам’ятників у Крижополі та Вінницькій області.', canonical, pageType = 'WebPage', structuredData = [], includeLocalBusiness = false, noindex = false, socialImage, breadcrumbs = [] } = Astro.props;
+const faqs = (Astro.props.faqs ?? []) as { question: string; answer: string }[];
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || import.meta.env.SITE || 'https://ministry-transformation.github.io').replace(/\/$/, '');
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteRoot = new URL(`${basePath}/`, `${siteUrl}/`).toString();
+const canonicalPath = canonical ? `${basePath}${canonical === '/' ? '/' : canonical}` : Astro.url.pathname;
+const canonicalUrl = new URL(canonicalPath, `${siteUrl}/`).toString();
+const pageImage = socialImage ? new URL(`${basePath}/images/${socialImage}`, `${siteUrl}/`).toString() : new URL(`${basePath}/images/concept-monument.webp`, `${siteUrl}/`).toString();
+const breadcrumbItems = canonicalUrl === siteRoot || noindex ? [] : [{ name: 'Головна', url: siteRoot }, ...breadcrumbs, { name: title, url: canonicalUrl }];
+const graph = [
+  { '@type': 'WebSite', '@id': `${siteRoot}#website`, url: siteRoot, name: 'Gravis', inLanguage: 'uk-UA' },
+  { '@type': pageType, '@id': `${canonicalUrl}#webpage`, url: canonicalUrl, name: title, description, inLanguage: 'uk-UA', isPartOf: { '@id': `${siteRoot}#website` } },
+  ...(includeLocalBusiness ? [localBusinessSchema(siteRoot)] : []),
+  ...(breadcrumbItems.length ? [{ '@type': 'BreadcrumbList', '@id': `${canonicalUrl}#breadcrumbs`, itemListElement: breadcrumbItems.map(({ name, url }, index) => ({ '@type': 'ListItem', position: index + 1, name, item: url })) }] : []),
+  ...(faqs.length ? [{ '@type': 'FAQPage', '@id': `${canonicalUrl}#faq`, mainEntity: faqs.map(({ question, answer }) => ({ '@type': 'Question', name: question, acceptedAnswer: { '@type': 'Answer', text: answer } })) }] : []),
+  ...(Array.isArray(structuredData) ? structuredData : [structuredData]),
+];
+const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
 ---
 <!doctype html>
 <html lang="uk">
@@ -8,8 +26,21 @@ const { title = 'Gravis — пам’ять, закарбована в каме�
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#1b1a18" />
+    <link rel="icon" type="image/svg+xml" href={`${basePath}/favicon.svg`} />
     <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow,max-image-preview:large'} />
+    {!noindex && <link rel="canonical" href={canonicalUrl} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="uk_UA" />
+    <meta property="og:site_name" content="Gravis" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={pageImage} />
+    <meta property="og:image:alt" content="Концептуальне зображення пам’ятника Gravis" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>
+    <script type="application/ld+json" set:html={jsonLd}></script>
   </head>
   <body class="gravis"><slot /></body>
 </html>

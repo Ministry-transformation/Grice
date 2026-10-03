@@ -1,0 +1,83 @@
+---
+const { serviceName, compact = false } = Astro.props;
+---
+
+<form class:list={["g-lead-form", compact && "g-lead-form-compact"]} data-lead-form data-service={serviceName}>
+  <p class="g-form-service">Заявка на послугу <b>{serviceName}</b></p>
+  <input type="hidden" name="preferences" data-preferences />
+  <div class="g-form-grid">
+    <label><span>Ваше ім’я <i aria-hidden="true">*</i></span><input name="name" autocomplete="name" required minlength="2" maxlength="80" placeholder="Як до вас звертатися" /></label>
+    <label><span>Номер телефону <i aria-hidden="true">*</i></span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" required minlength="7" maxlength="30" placeholder="+380 …" /></label>
+    {!compact && <label>Місто / кладовище<input name="location" autocomplete="off" maxlength="120" placeholder="Якщо вже відомо" /></label>}
+    {!compact && <label class="g-form-wide">Що важливо врахувати?<textarea name="details" rows="4" maxlength="1600" placeholder="Коротко опишіть задум або поставте запитання"></textarea></label>}
+    {compact && <label class="g-form-wide">Коли зручно зв’язатися? <select name="contact_time"><option value="">Оберіть час (необов’язково)</option><option>У першій половині дня</option><option>У другій половині дня</option><option>Увечері</option><option>У будь-який час</option></select></label>}
+    {!compact && <label class="g-form-wide g-file-field">Фото або ескіз <input name="attachments" type="file" accept="image/*,.pdf" multiple data-attachments /><small>Файли залишаються на вашому пристрої. Виберіть зображення або PDF до 10 МБ кожен; потім прикріпіть їх до листа вручну.</small><span data-file-status role="status"></span></label>}
+  </div>
+  <div class="g-form-submit"><button class="g-button" type="submit">Підготувати заявку <span aria-hidden="true">→</span></button><p>Ви перевірите готовий лист і самі вирішите, чи надсилати його. Сайт не зберігає введені дані.</p></div>
+  <p class="g-form-status" data-form-status role="status" aria-live="polite" tabindex="-1"></p>
+  <a class="g-button g-form-email-draft" data-email-draft href="mailto:mega-gospodar@meta.ua" hidden>Відкрити лист для надсилання <span aria-hidden="true">→</span></a>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const values = new FormData(form);
+      const nameField = form.elements.namedItem('name') as HTMLInputElement;
+      const phoneField = form.elements.namedItem('phone') as HTMLInputElement;
+      const name = String(values.get('name') ?? '').trim();
+      const phone = String(values.get('phone') ?? '').trim();
+      const phoneDigits = phone.replace(/\D/g, '').length;
+      nameField.setCustomValidity(name.length < 2 ? 'Введіть ім’я щонайменше з двох символів.' : '');
+      phoneField.setCustomValidity(
+        /^\+?[\d\s().-]+$/.test(phone) && phoneDigits >= 7 && phoneDigits <= 15
+          ? ''
+          : 'Введіть номер телефону цифрами: від 7 до 15 цифр.',
+      );
+      if (!form.reportValidity()) return;
+
+      const details = String(values.get('details') ?? '').trim();
+      const contactTime = String(values.get('contact_time') ?? '').trim();
+      const location = String(values.get('location') ?? '').trim();
+      const preferences = String(values.get('preferences') ?? '').trim();
+      const files = Array.from((form.querySelector<HTMLInputElement>('[data-attachments]')?.files ?? []));
+      const invalidFile = files.find((file) => file.size > 10 * 1024 * 1024 || (!file.type.startsWith('image/') && file.type !== 'application/pdf'));
+      const fileStatus = form.querySelector<HTMLElement>('[data-file-status]');
+      if (invalidFile) {
+        if (fileStatus) fileStatus.textContent = `${invalidFile.name}: оберіть зображення або PDF до 10 МБ.`;
+        form.querySelector<HTMLInputElement>('[data-attachments]')?.focus();
+        return;
+      }
+      if (fileStatus) fileStatus.textContent = files.length ? `Обрано ${files.length} файл(ів): ${files.map((file) => file.name).join(', ')}. Додайте їх до листа вручну.` : '';
+      const service = form.dataset.service ?? 'Послуга Gravis';
+      const subject = `Заявка: ${service}`;
+      const body = [
+        `Послуга: ${service}`,
+        `Ім’я: ${name}`,
+        `Телефон: ${phone}`,
+        contactTime ? `Зручний час для зв’язку: ${contactTime}` : '',
+        location ? `Місто / кладовище: ${location}` : '',
+        preferences ? `Обрані напрямки: ${preferences}` : '',
+        details ? `Коментар: ${details}` : '',
+        files.length ? `Файли для ручного додавання: ${files.map((file) => file.name).join(', ')}` : '',
+      ].filter(Boolean).join('\n');
+      const status = form.querySelector<HTMLElement>('[data-form-status]');
+
+      const draft = form.querySelector<HTMLAnchorElement>('[data-email-draft]');
+      if (draft) {
+        draft.href = `mailto:mega-gospodar@meta.ua?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        draft.hidden = false;
+      }
+      if (status) status.textContent = 'Заявку підготовлено. Відкрийте лист, перевірте його й натисніть «Надіслати», щоб ми отримали ваш запит.';
+    });
+    const nameField = form.elements.namedItem('name') as HTMLInputElement;
+    const phoneField = form.elements.namedItem('phone') as HTMLInputElement;
+    nameField.addEventListener('input', () => nameField.setCustomValidity(''));
+    phoneField.addEventListener('input', () => phoneField.setCustomValidity(''));
+    form.querySelector<HTMLInputElement>('[data-attachments]')?.addEventListener('change', (event) => {
+      const input = event.currentTarget as HTMLInputElement;
+      const status = form.querySelector<HTMLElement>('[data-file-status]');
+      if (status) status.textContent = Array.from(input.files ?? []).map(({ name }) => name).join(', ');
+    });
+  });
+</script>
